@@ -65,9 +65,30 @@ public interface N5ExportMetadata
 		return String.format( "c%d", channel );
 	}
 
+	public static String getTimeGroupPath( final int time )
+	{
+		return String.format( "t%d", time );
+	}
+
+	public static String getTimeChannelGroupPath( final int channel, final int time )
+	{
+		return String.format( "%s/%s", getChannelGroupPath( channel ), getTimeGroupPath( time ));
+	}
+
 	public static String getScaleLevelDatasetPath( final int channel, final int scale )
 	{
 		return String.format( "%s/s%d", getChannelGroupPath( channel ), scale );
+	}
+
+	public static String getTimeLevelDatasetPath( final int time, final int scale )
+	{
+		return String.format( "%s/s%d", getTimeGroupPath( time ), scale );
+	}
+
+	public static String getTimeChannelGroupPath( final int channel, final int time, final int scale )
+	{
+		return String.format( "%s/%s/s%d", getChannelGroupPath( channel ), 
+				getTimeGroupPath( time ), scale );
 	}
 
 	public static GsonBuilder getGsonBuilder()

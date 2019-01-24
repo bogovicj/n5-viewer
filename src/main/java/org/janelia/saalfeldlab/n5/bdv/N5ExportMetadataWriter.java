@@ -27,7 +27,7 @@ public class N5ExportMetadataWriter extends N5ExportMetadataReader
 {
 	private final N5Writer n5Writer;
 
-	N5ExportMetadataWriter( final N5Writer n5Writer )
+	public N5ExportMetadataWriter( final N5Writer n5Writer )
 	{
 		super( n5Writer );
 		this.n5Writer = n5Writer;

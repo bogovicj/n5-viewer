@@ -34,6 +34,7 @@ public class N5ExportMetadataReader
 	protected static final String pixelResolutionKey = "pixelResolution";
 	protected static final String affineTransformKey = "affineTransform";
 
+	protected static final Pattern timePattern = Pattern.compile("^t\\d+$");
 	protected static final Pattern channelPattern = Pattern.compile("^c\\d+$");
 	protected static final Pattern scaleLevelPattern = Pattern.compile("^s\\d+$");
 
@@ -42,6 +43,11 @@ public class N5ExportMetadataReader
 	N5ExportMetadataReader( final N5Reader n5Reader )
 	{
 		this.n5Reader = n5Reader;
+	}
+
+	public int getNumTimepoints() throws IOException
+	{
+		return listTimes().length;
 	}
 
 	public int getNumChannels() throws IOException
@@ -124,6 +130,11 @@ public class N5ExportMetadataReader
 		return getAttribute( channel, affineTransformKey, AffineTransform3D.class );
 	}
 
+	public AffineTransform3D getAffineTransform( final int channel, final int time ) throws IOException
+	{
+		return getAttribute( channel, time, affineTransformKey, AffineTransform3D.class );
+	}
+
 	private < T > T getAttribute( final String key, final Class< T > clazz ) throws IOException
 	{
 		return n5Reader.getAttribute( "/", key, clazz );
@@ -133,6 +144,19 @@ public class N5ExportMetadataReader
 	{
 		final T overriddenValue = n5Reader.getAttribute( N5ExportMetadata.getChannelGroupPath( channel ), key, clazz );
 		return overriddenValue != null ? overriddenValue : getAttribute( key, clazz );
+	}
+
+	private < T > T getAttribute( final int channel, final int time, final String key, final Class< T > clazz ) throws IOException
+	{
+		final T overriddenValue = n5Reader.getAttribute( N5ExportMetadata.getChannelGroupPath( channel ), key, clazz );
+		return overriddenValue != null ? overriddenValue : getAttribute( key, clazz );
+	}
+
+	private String[] listTimes() throws IOException
+	{
+		return Arrays.stream( n5Reader.list( "/" ) )
+			.filter( timePattern.asPredicate() )
+			.toArray( String[]::new );
 	}
 
 	private String[] listChannels() throws IOException
